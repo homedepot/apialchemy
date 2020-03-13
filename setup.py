@@ -27,7 +27,7 @@ setup(name='APIAlchemy',
       packages=find_packages('src'),
       package_dir={'': 'src'},
       install_requires=[
-          'AppDynamicsREST @ git+https://github.com/homedepot/AppDynamicsREST#egg=AppDynamicsREST',
+          'AppDynamicsRESTx',
           'prometheus_client',
           'PyGithub',
           'splunk-sdk'
