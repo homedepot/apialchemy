@@ -14,6 +14,7 @@ APIAlchemy provides developers an abstraction layer for consuming web services f
 - [AppDynamics](https://docs.appdynamics.com/display/PRO43/Metric+and+Snapshot+API)
 - [ExtraHop](https://docs.extrahop.com/7.9/rest-extract-metrics)
 - [GitHub](https://developer.github.com/v3/)
+- [Prometheus](https://prometheus.io/docs/prometheus/latest/querying/api)
 - [Prometheus Pushgateway](https://github.com/prometheus/pushgateway)
 - [Splunk](https://docs.splunk.com/Documentation/Splunk/8.0.2/RESTUM/RESTusing)
 

@@ -29,6 +29,7 @@ setup(name='APIAlchemy',
       install_requires=[
           'AppDynamicsRESTx',
           'prometheus_client',
+          'prometheus-api-client',
           'PyGithub',
           'splunk-sdk'
       ],
