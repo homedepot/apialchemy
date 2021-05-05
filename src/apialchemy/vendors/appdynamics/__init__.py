@@ -19,7 +19,8 @@ class Service(BaseService):
 
         pattern = re.compile(
             r"""
-                (?P<username>[^:/]*)
+                (?P<username>[^@:/]*)
+                (?:@(?P<account>[^/:]+))?
                 :(?P<password>.*)
                 @(?:
                     \[(?P<ipv6host>[^/]+)\] |
@@ -37,6 +38,12 @@ class Service(BaseService):
             components = m.groupdict()
 
             components['username'] = parse.unquote(components['username'])
+
+            account = components.pop('account')
+
+            if account is not None:
+                components['account'] = parse.unquote(account)
+
             components['password'] = parse.unquote(components['password'])
 
             ipv4host = components.pop('ipv4host')
