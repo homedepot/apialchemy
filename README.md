@@ -16,6 +16,7 @@ APIAlchemy provides developers an abstraction layer for consuming web services f
 - [GitHub](https://developer.github.com/v3/)
 - [Prometheus](https://prometheus.io/docs/prometheus/latest/querying/api)
 - [Prometheus Pushgateway](https://github.com/prometheus/pushgateway)
+- [SolarWinds](https://github.com/solarwinds/OrionSDK/wiki/REST)
 - [Splunk](https://docs.splunk.com/Documentation/Splunk/8.0.2/RESTUM/RESTusing)
 
 ## License

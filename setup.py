@@ -28,6 +28,7 @@ setup(name='APIAlchemy',
       package_dir={'': 'src'},
       install_requires=[
           'AppDynamicsRESTx',
+          'orionsdk',
           'prometheus_client',
           'prometheus-api-client',
           'PyGithub',
