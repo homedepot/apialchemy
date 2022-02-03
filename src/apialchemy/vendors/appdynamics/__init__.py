@@ -4,14 +4,12 @@ import urllib3
 
 from urllib import parse
 
-from .. import BaseService
-
 from appd.request import AppDynamicsClient
+
+from .. import BaseService
 
 
 class Service(BaseService):
-    _conn_params = {}
-
     application = None
 
     def __init__(self, scheme, conn_str):
@@ -77,7 +75,7 @@ class Service(BaseService):
         if not verify:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        return AppDynamicsClient(**self._conn_params, verify=verify)
+        return AppDynamicsClient(verify=verify, **self._conn_params)
 
     @staticmethod
     def get_application_component_id(client, application_id, name):

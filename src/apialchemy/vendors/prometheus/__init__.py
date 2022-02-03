@@ -5,14 +5,12 @@ import urllib3
 
 from urllib import parse
 
-from .. import BaseService
-
 from prometheus_api_client import PrometheusConnect, Metric, MetricsList
+
+from .. import BaseService
 
 
 class Service(BaseService):
-    _conn_params = {}
-
     def __init__(self, scheme, conn_str):
         super(Service, self).__init__(scheme, conn_str)
 
@@ -76,7 +74,7 @@ class Service(BaseService):
         if not verify:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        return PrometheusConnect(**self._conn_params, disable_ssl=not verify)
+        return PrometheusConnect(disable_ssl=not verify, **self._conn_params)
 
     @staticmethod
     def get_metric_obj(metric_data):

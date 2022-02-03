@@ -1,6 +1,4 @@
-import os
 import re
-import urllib3
 
 from urllib import parse
 
@@ -16,14 +14,11 @@ class Service(BaseService):
         pattern = re.compile(
             r"""
                 (?:
-                    (?P<username>[^:/]*)
-                    :(?P<password>.*)@
-                )?
-                (?:
                     \[(?P<ipv6host>[^/]+)\] |
                     (?P<ipv4host>[^/:]+)
                 )
                 (?::(?P<port>[\d]+))?
+                (?:/(?P<prefix>.*))?
             """,
             re.X
         )
@@ -33,25 +28,23 @@ class Service(BaseService):
         if m is not None:
             components = m.groupdict()
 
-            if components['username'] is not None and components['password'] is not None:
-                components['username'] = parse.unquote(components['username'])
-                components['password'] = parse.unquote(components['password'])
-
-            if self._scheme is not None:
-                components['scheme'] = self._scheme
-
             ipv4host = components.pop('ipv4host')
             ipv6host = components.pop('ipv6host')
 
             components['host'] = ipv4host or ipv6host
 
+            port = components.pop('port')
+
+            if port is not None:
+                components['port'] = int(port)
+
+            prefix = components.pop('prefix')
+
+            if prefix is not None:
+                components['prefix'] = parse.unquote(prefix).strip('.')
+
             self._conn_params = components
 
     @property
     def client(self):
-        verify = os.getenv('APIALCHEMY_PUSHGATEWAY_SSL_VERIFY', 'true').lower() == 'true'
-
-        if not verify:
-            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-        return Client(verify=verify, **self._conn_params)
+        return Client(**self._conn_params)

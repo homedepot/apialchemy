@@ -6,15 +6,13 @@ from time import sleep
 
 from urllib import parse
 
-from .. import BaseService
-
 from splunklib.client import connect
 from splunklib import results
 
+from .. import BaseService
+
 
 class Service(BaseService):
-    _conn_params = {}
-
     application = None
 
     def __init__(self, scheme, conn_str):
@@ -69,7 +67,7 @@ class Service(BaseService):
         if not verify:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        return connect(**self._conn_params, verify=verify)
+        return connect(verify=verify, **self._conn_params)
 
     @staticmethod
     def search(client, query, **kwargs):

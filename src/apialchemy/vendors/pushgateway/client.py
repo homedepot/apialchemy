@@ -1,36 +1,18 @@
 import base64
-import ssl
 
 from prometheus_client import delete_from_gateway, push_to_gateway, pushadd_to_gateway
 
-from urllib.request import build_opener, Request, HTTPHandler, HTTPSHandler
-from urllib.parse import urlparse
+from urllib3 import PoolManager
 
-DEFAULT_HOST = 'localhost'
-DEFAULT_SCHEME = 'https'
+from .. import BaseClient
 
 
-class PushgatewayClient:
-    _session = None
-
+class Client(BaseClient):
     def __init__(self, **kwargs):
-        self.base_url = self._get_base_url(kwargs.get('scheme', DEFAULT_SCHEME),
-                                           kwargs.get('host', DEFAULT_HOST),
-                                           kwargs.get('port'))
+        super(Client, self).__init__(**kwargs)
+
         self.username = kwargs.get('username')
         self.password = kwargs.get('password')
-        self.verify = kwargs.get('verify', True)
-
-    def _get_base_url(self, scheme, host, port):
-        if ':' in host:
-            host = '[' + host + ']'
-
-        base_url = scheme + '://' + host
-
-        if port is not None:
-            base_url += ':' + port
-
-        return base_url
 
     def _pushgateway_handler(self, url, method, timeout, headers, data):
         username = self.username
@@ -44,36 +26,19 @@ class PushgatewayClient:
                 auth_header = b'Basic ' + auth_token
                 headers.append(['Authorization', auth_header])
 
-            url_components = urlparse(url)
+            cert_reqs = 'CERT_REQUIRED' if verify else 'CERT_NONE'
 
-            if not url_components.scheme or url_components.scheme != 'https':
-                url_handler = HTTPHandler
-            else:
-                context = ssl.SSLContext()
+            http = PoolManager(cert_reqs=cert_reqs)
 
-                if verify:
-                    context.verify_mode = ssl.CERT_REQUIRED
-                else:
-                    context.verify_mode = ssl.CERT_NONE
+            resp = http.request(method, url, headers=dict(headers), body=data, timeout=timeout)
 
-                url_handler = HTTPSHandler(context=context)
-
-            request = Request(url, data=data)
-            request.get_method = lambda: method
-
-            for k, v in headers:
-                request.add_header(k, v)
-
-            resp = build_opener(url_handler).open(request, timeout=timeout)
-
-            if resp.code >= 400:
-                raise IOError("error talking to pushgateway: {0} {1}".format(
-                    resp.code, resp.msg))
+            if resp.status >= 400:
+                raise IOError("error talking to pushgateway: {0} {1}".format(resp.status, resp.reason))
 
         return handle
 
     def delete(self, **kwargs):
-        if 'handler' in kwargs:
+        if 'handler' in kwargs.keys():
             handler = kwargs.pop('handler')
         else:
             handler = None
@@ -84,7 +49,7 @@ class PushgatewayClient:
         delete_from_gateway(self.base_url, handler=handler, **kwargs)
 
     def push(self, **kwargs):
-        if 'handler' in kwargs:
+        if 'handler' in kwargs.keys():
             handler = kwargs.pop('handler')
         else:
             handler = None

@@ -10,8 +10,6 @@ from .. import BaseService
 
 
 class Service(BaseService):
-    _conn_params = {}
-
     def __init__(self, scheme, conn_str):
         super(Service, self).__init__(scheme, conn_str)
 
@@ -62,7 +60,7 @@ class Service(BaseService):
         if not verify:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        return Github(**self._conn_params, verify=verify)
+        return Github(verify=verify, **self._conn_params)
 
     @staticmethod
     def get_file_contents(client, org, repo, path, branch):

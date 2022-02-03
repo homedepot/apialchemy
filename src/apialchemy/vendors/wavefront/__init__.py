@@ -1,6 +1,4 @@
-import os
 import re
-import urllib3
 
 from urllib import parse
 
@@ -10,19 +8,18 @@ from .client import Client
 
 
 class Service(BaseService):
-    application = None
-
     def __init__(self, scheme, conn_str):
         super(Service, self).__init__(scheme, conn_str)
 
         pattern = re.compile(
             r"""
-                (?P<apikey>[^:/]*)
-                @(?:
+                (?:(?P<apikey>[^@:/]*)@)?
+                (?:
                     \[(?P<ipv6host>[^/]+)\] |
                     (?P<ipv4host>[^/:]+)
                 )
                 (?::(?P<port>[\d]+))?
+                (?:/(?P<prefix>.*))?
             """,
             re.X
         )
@@ -32,23 +29,28 @@ class Service(BaseService):
         if m is not None:
             components = m.groupdict()
 
-            components['apikey'] = parse.unquote(components['apikey'])
-
-            if self._scheme is not None:
-                components['scheme'] = self._scheme
-
             ipv4host = components.pop('ipv4host')
             ipv6host = components.pop('ipv6host')
 
             components['host'] = ipv4host or ipv6host
 
+            apikey = components.pop('apikey')
+
+            if apikey is not None:
+                components['host'] = parse.unquote(apikey) + '@' + components['host']
+
+            if self._scheme is not None:
+                components['scheme'] = self._scheme
+            else:
+                components['scheme'] = 'http'
+
+            prefix = components.pop('prefix')
+
+            if prefix is not None:
+                components['prefix'] = parse.unquote(prefix).strip('.')
+
             self._conn_params = components
 
     @property
     def client(self):
-        verify = os.getenv('APIALCHEMY_EXTRAHOP_SSL_VERIFY', 'true').lower() == 'true'
-
-        if not verify:
-            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-        return Client(verify=verify, **self._conn_params)
+        return Client(**self._conn_params)

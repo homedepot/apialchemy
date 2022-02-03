@@ -15,12 +15,6 @@ class Client(BaseClient):
 
         self.apikey = kwargs.get('apikey')
 
-    @staticmethod
-    def _get_full_path(path=None):
-        path = '/api/v1' + (path or '')
-
-        return path
-
     def _get_session(self):
         if not self._session:
             self._session = Session()
@@ -40,20 +34,19 @@ class Client(BaseClient):
 
         return s.send(prepped, **settings)
 
-    def get_metrics(self, **params):
-        url = self.base_url + self._get_full_path('/metrics')
+    def query(self, query_str):
+        url = self.base_url + '/graphql'
 
-        for k in list(params.keys()):
-            if params[k] is None:
-                del params[k]
+        params = {
+            'query': query_str
+        }
 
         kwargs = {
             'method': 'POST',
             'url': url,
             'headers': {
                 'Content-type': 'application/json',
-                'Accept': 'text/plain',
-                'Authorization': 'ExtraHop apikey=' + self.apikey
+                'API-Key': self.apikey
             },
             'data': json.dumps(params)
         }

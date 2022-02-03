@@ -10,8 +10,6 @@ from .. import BaseService
 
 
 class Service(BaseService):
-    _conn_params = {}
-
     def __init__(self, scheme, conn_str):
         super(Service, self).__init__(scheme, conn_str)
 

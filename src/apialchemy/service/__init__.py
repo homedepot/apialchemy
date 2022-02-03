@@ -4,7 +4,7 @@ import re
 
 def parse_uri(uri):
     pattern = re.compile(
-        r'^(?P<vendor>\w+)(?:\+(?P<scheme>http|https))?://(?P<conn_str>.*)',
+        r'^(?P<vendor>\w+)(?:\+(?P<scheme>http|https|proxy))?://(?P<conn_str>.*)',
         re.X,
     )
 
