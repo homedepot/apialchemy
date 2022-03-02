@@ -66,3 +66,25 @@ class Client(BaseClient):
             r.raise_for_status()
 
         return r.json()
+
+    def get_metrics_by_xid(self, xid):
+        url = self.base_url + self._get_full_path('/metrics/next/' + str(xid))
+
+        kwargs = {
+            'method': 'GET',
+            'url': url,
+            'headers': {
+                'Content-type': 'application/json',
+                'Accept': 'text/plain',
+                'Authorization': 'ExtraHop apikey=' + self.apikey
+            }
+        }
+
+        r = self._request(**kwargs)
+
+        if r.status_code != codes.ok:
+            print(url, file=sys.stderr)
+
+            r.raise_for_status()
+
+        return r.json()
