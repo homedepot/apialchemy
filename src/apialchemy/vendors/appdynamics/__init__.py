@@ -17,15 +17,15 @@ class Service(BaseService):
 
         pattern = re.compile(
             r"""
-                (?P<username>[^@:/]*)
-                (?:@(?P<account>[^/:]+))?
-                :(?P<password>.*)
+                (?P<username>[^@:]+)
+                (?:@(?P<account>[^:]+))?
+                :(?P<password>.+)
                 @(?:
                     \[(?P<ipv6host>[^/]+)\] |
                     (?P<ipv4host>[^/:]+)
                 )
                 (?::(?P<port>[\d]+))?
-                (?:/(?P<application>.*))?
+                (?:/(?P<application>.+))?
             """,
             re.X
         )

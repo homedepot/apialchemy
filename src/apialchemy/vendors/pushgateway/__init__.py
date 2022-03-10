@@ -16,8 +16,8 @@ class Service(BaseService):
         pattern = re.compile(
             r"""
                 (?:
-                    (?P<username>[^:/]*)
-                    :(?P<password>.*)@
+                    (?P<username>[^:]+)
+                    :(?P<password>[^@]+)@
                 )?
                 (?:
                     \[(?P<ipv6host>[^/]+)\] |

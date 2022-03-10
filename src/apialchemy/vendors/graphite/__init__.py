@@ -18,7 +18,7 @@ class Service(BaseService):
                     (?P<ipv4host>[^/:]+)
                 )
                 (?::(?P<port>[\d]+))?
-                (?:/(?P<prefix>.*))?
+                (?:/(?P<prefix>.+))?
             """,
             re.X
         )

@@ -13,13 +13,13 @@ class Service(BaseService):
 
         pattern = re.compile(
             r"""
-                (?:(?P<apikey>[^@:/]*)@)?
+                (?:(?P<apikey>[^@]+)@)?
                 (?:
                     \[(?P<ipv6host>[^/]+)\] |
                     (?P<ipv4host>[^/:]+)
                 )
                 (?::(?P<port>[\d]+))?
-                (?:/(?P<prefix>.*))?
+                (?:/(?P<prefix>.+))?
             """,
             re.X
         )

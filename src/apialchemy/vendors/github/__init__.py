@@ -15,12 +15,14 @@ class Service(BaseService):
 
         pattern = re.compile(
             r"""
-                (?P<login_or_token>.*)
-                @(?:
-                    \[(?P<ipv6host>[^/]+)\] |
-                    (?P<ipv4host>[^/:]+)
-                )
-                (?::(?P<port>[\d]+))?
+                (?P<login_or_token>[^@]+)
+                (?:
+                    @(?:
+                        \[(?P<ipv6host>[^/]+)\] |
+                        (?P<ipv4host>[^/:]+)
+                    )
+                    (?::(?P<port>[\d]+))?
+                )?
             """,
             re.X
         )
@@ -37,19 +39,20 @@ class Service(BaseService):
 
             host = ipv4host or ipv6host
 
-            if self._scheme is not None:
-                scheme = self._scheme
-            else:
-                scheme = 'https'
-
-            components['base_url'] = scheme + '://' + host
-
             port = components.pop('port')
 
-            if port is not None:
-                components['base_url'] += ':' + port
+            if host is not None:
+                if self._scheme is not None:
+                    scheme = self._scheme
+                else:
+                    scheme = 'https'
 
-            components['base_url'] += '/api/v3'
+                components['base_url'] = scheme + '://' + host
+
+                if port is not None:
+                    components['base_url'] += ':' + port
+
+                components['base_url'] += '/api/v3'
 
             self._conn_params = components
 
